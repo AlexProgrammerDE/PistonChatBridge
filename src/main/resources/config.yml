@@ -1,0 +1,8 @@
+# Login token for the bot to login into discord
+token: "token"
+
+# Channel where the chatbridge runs on
+channel: "channelid"
+
+# The url of your server (Will be shown in discord)
+url: "example.com"
