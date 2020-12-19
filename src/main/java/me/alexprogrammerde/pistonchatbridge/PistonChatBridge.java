@@ -1,4 +1,4 @@
-package me.alexprogrammerde.ChatBridge;
+package me.alexprogrammerde.pistonchatbridge;
 
 import discord4j.rest.util.Color;
 import org.bukkit.Bukkit;

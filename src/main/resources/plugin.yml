@@ -1,6 +1,6 @@
 name: PistonChatBridge
 version: 1.0.0
 api: 1.12
-main: me.alexprogrammerde.PistonChatBridge.PistonChatBridge
+main: me.alexprogrammerde.pistonchatbridge.PistonChatBridge
 author: AlexProgrammerDE
 description: A plugin for syncing the chat with discord.

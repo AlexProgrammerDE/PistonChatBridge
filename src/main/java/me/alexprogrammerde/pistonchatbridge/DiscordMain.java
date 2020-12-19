@@ -1,4 +1,4 @@
-package me.alexprogrammerde.ChatBridge;
+package me.alexprogrammerde.pistonchatbridge;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;

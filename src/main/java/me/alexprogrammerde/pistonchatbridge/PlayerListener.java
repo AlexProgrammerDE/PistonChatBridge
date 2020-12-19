@@ -1,4 +1,4 @@
-package me.alexprogrammerde.ChatBridge;
+package me.alexprogrammerde.pistonchatbridge;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
