@@ -1,6 +1,5 @@
 package me.alexprogrammerde.ChatBridge;
 
-import com.mojang.authlib.GameProfile;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -21,11 +20,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Objects;
 
 public class DiscordMain {
-    GatewayDiscordClient gateway;
-    MessageChannel channel;
-    PistonChatBridge plugin;
-    boolean scheduletasks;
-    boolean hasstarted;
+    private GatewayDiscordClient gateway;
+    protected MessageChannel channel;
+
+    private final PistonChatBridge plugin;
+
+    protected boolean scheduleTasks;
+    protected boolean hasStarted;
 
     public DiscordMain(PistonChatBridge plugin) {
         this.plugin = plugin;
@@ -42,14 +43,14 @@ public class DiscordMain {
         gateway.updatePresence(Presence.online(Activity.playing(config.getString("url")))).subscribe();
 
         gateway.on(MessageCreateEvent.class).subscribe(event -> {
-            if (scheduletasks) {
+            if (scheduleTasks) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
                         Message message = event.getMessage();
 
                         if (message.getChannel().block() instanceof GuildMessageChannel) {
-                            GuildMessageChannel messagechannel = (GuildMessageChannel) message.getChannel().block();
+                            GuildMessageChannel messageChannel = (GuildMessageChannel) message.getChannel().block();
 
                             if (!message.getAuthor().get().getId().equals(gateway.getSelfId())) {
                                 // How to implement commands
@@ -57,12 +58,21 @@ public class DiscordMain {
                                 //     channel.createMessage(Objects.requireNonNull(message.getAuthorAsMember().block()).getMention() + " test");
                                 // } else
 
-                                if (messagechannel.getId().equals(Snowflake.of(config.getString("channel")))) {
-                                    Color rolecolor = Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getColor();
+                                if (messageChannel.getId().equals(Snowflake.of(config.getString("channel")))) {
+                                    Color roleColor = Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getColor();
 
-                                    ChatColor rolechatcolor = ColorUtil.fromRGB(rolecolor.getRed(), rolecolor.getGreen(), rolecolor.getBlue());
+                                    ChatColor roleChatcolor = ColorUtil.fromRGB(roleColor);
 
-                                    Bukkit.broadcastMessage("[" + rolechatcolor + Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getName() + ChatColor.RESET + "] " + ChatColor.BOLD + message.getAuthorAsMember().block().getDisplayName() + " > " + message.getContent());
+                                    Bukkit.broadcastMessage(
+                                            "["
+                                                    + roleChatcolor
+                                                    + Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getName()
+                                                    + ChatColor.RESET
+                                                    + "] "
+                                                    + ChatColor.BOLD
+                                                    + message.getAuthorAsMember().block().getDisplayName()
+                                                    + " > "
+                                                    + message.getContent());
                                 }
                             }
                         }
@@ -72,11 +82,11 @@ public class DiscordMain {
         });
 
         gateway.on(ConnectEvent.class).subscribe(event -> {
-            if (scheduletasks) {
+            if (scheduleTasks) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        hasstarted = true;
+                        hasStarted = true;
                         channel.createEmbed(spec -> spec
                                 .setTitle("Server started!")
                                 .setColor(Color.GREEN)).block();
@@ -89,7 +99,7 @@ public class DiscordMain {
     }
 
     public void sendMessage(Player player, String message) {
-        if (scheduletasks) {
+        if (scheduleTasks) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -102,7 +112,7 @@ public class DiscordMain {
     }
 
     public void sendMessage(String message) {
-        if (scheduletasks) {
+        if (scheduleTasks) {
             new BukkitRunnable() {
                 @Override
                 public void run() {

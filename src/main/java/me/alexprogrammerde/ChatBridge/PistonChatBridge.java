@@ -3,7 +3,6 @@ package me.alexprogrammerde.ChatBridge;
 import discord4j.rest.util.Color;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -11,21 +10,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.logging.Logger;
 
 public class PistonChatBridge extends JavaPlugin {
-    Logger console;
-    DiscordMain discord;
-    PlayerEvents listener;
-    String prefix;
+    private Logger log;
+    private DiscordMain discord;
+    private PlayerListener listener;
+    private String prefix;
 
     public void onEnable() {
-        console = getLogger();
+        log = getLogger();
         prefix = "" + ChatColor.GREEN;
         
-        console.info(prefix + "Loading config.");
+        log.info(prefix + "Loading config.");
         saveDefaultConfig();
 
-        console.info(prefix + "Starting discord bridge");
+        log.info(prefix + "Starting discord bridge");
         discord = new DiscordMain(this);
-        discord.scheduletasks = true;
+        discord.scheduleTasks = true;
 
         new BukkitRunnable() {
             @Override
@@ -34,31 +33,31 @@ public class PistonChatBridge extends JavaPlugin {
             }
         }.runTaskAsynchronously(this);
 
-        console.info(prefix + "Registering listeners");
-        listener = new PlayerEvents(discord);
+        log.info(prefix + "Registering listeners");
+        listener = new PlayerListener(discord);
         getServer().getPluginManager().registerEvents(listener,this);
     }
 
     @Override
     public void onDisable() {
-        console.info(prefix + "Telling discord bridge not to send messages anymore");
-        discord.scheduletasks = false;
+        log.info(prefix + "Telling discord bridge not to send messages anymore");
+        discord.scheduleTasks = false;
 
-        console.info(prefix + "Unregistering all listeners");
+        log.info(prefix + "Unregistering all listeners");
         HandlerList.unregisterAll(listener);
 
-        console.info(prefix + "Sending shutdown message");
-        if (discord.hasstarted) {
+        log.info(prefix + "Sending shutdown message");
+        if (discord.hasStarted) {
             discord.channel.createEmbed(spec -> spec
                     .setTitle("Server stopping!")
                     .setColor(Color.RED)).block();
         } else {
-            console.info("Oh no! The client hasn't even started yet! Skipping that message.");
+            log.info("Oh no! The client hasn't even started yet! Skipping that message.");
         }
 
-        console.info(prefix + "Killing discord task");
+        log.info(prefix + "Killing discord task");
         Bukkit.getScheduler().cancelTasks(this);
 
-        console.info(prefix + "Finished unloading! Goodbye!");
+        log.info(prefix + "Finished unloading! Goodbye!");
     }
 }

@@ -1,5 +1,6 @@
 package me.alexprogrammerde.ChatBridge;
 
+import discord4j.rest.util.Color;
 import org.bukkit.ChatColor;
 
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ColorUtil {
-
     private static final Map<ChatColor, ColorSet<Integer, Integer, Integer>> colorMap = new HashMap<>();
 
     static {
@@ -53,16 +53,15 @@ public class ColorUtil {
         }
     }
 
-    public static ChatColor fromRGB(int r, int g, int b) {
+    public static ChatColor fromRGB(Color col) {
         TreeMap<Integer, ChatColor> closest = new TreeMap<>();
         colorMap.forEach((color, set) -> {
-            int red = Math.abs(r - set.getRed());
-            int green = Math.abs(g - set.getGreen());
-            int blue = Math.abs(b - set.getBlue());
+            int red = Math.abs(col.getRed() - set.getRed());
+            int green = Math.abs(col.getGreen() - set.getGreen());
+            int blue = Math.abs(col.getBlue() - set.getBlue());
             closest.put(red + green + blue, color);
         });
 
         return closest.firstEntry().getValue();
     }
-
 }

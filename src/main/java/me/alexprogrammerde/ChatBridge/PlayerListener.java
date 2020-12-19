@@ -1,37 +1,36 @@
 package me.alexprogrammerde.ChatBridge;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PlayerEvents implements Listener {
-    DiscordMain discord;
-    public PlayerEvents(DiscordMain discord) {
+public class PlayerListener implements Listener {
+    private final DiscordMain discord;
+
+    public PlayerListener(DiscordMain discord) {
         this.discord = discord;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMessage(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-
-        discord.sendMessage(player, event.getMessage());
+        discord.sendMessage(event.getPlayer(), event.getMessage());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event) {
         discord.sendMessage(event.getJoinMessage());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onQuit(PlayerQuitEvent event) {
         discord.sendMessage(event.getQuitMessage());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDeath(PlayerDeathEvent event) {
         discord.sendMessage(event.getDeathMessage());
     }
