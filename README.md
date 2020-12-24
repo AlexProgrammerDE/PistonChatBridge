@@ -1,2 +1,2 @@
 # PistonChatBridge
-Link your discord server with your minecraft server chat!
+A plugin for syncing the chat with discord.
