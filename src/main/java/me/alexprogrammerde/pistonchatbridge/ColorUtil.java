@@ -3,12 +3,14 @@ package me.alexprogrammerde.pistonchatbridge;
 import discord4j.rest.util.Color;
 import org.bukkit.ChatColor;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class ColorUtil {
-    private static final Map<ChatColor, ColorSet<Integer, Integer, Integer>> colorMap = new HashMap<>();
+    private static final Map<ChatColor, ColorSet<Integer, Integer, Integer>> colorMap = new EnumMap<>(ChatColor.class);
+
+    private ColorUtil() {}
 
     static {
         colorMap.put(ChatColor.BLACK, new ColorSet<>(0, 0, 0));

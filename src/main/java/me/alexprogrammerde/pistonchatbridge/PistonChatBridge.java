@@ -13,16 +13,15 @@ public class PistonChatBridge extends JavaPlugin {
     private Logger log;
     private DiscordMain discord;
     private PlayerListener listener;
-    private String prefix;
 
+    @Override
     public void onEnable() {
         log = getLogger();
-        prefix = "" + ChatColor.GREEN;
-        
-        log.info(prefix + "Loading config.");
+
+        log.info(ChatColor.GREEN + "Loading config.");
         saveDefaultConfig();
 
-        log.info(prefix + "Starting discord bridge");
+        log.info(ChatColor.GREEN + "Starting discord bridge");
         discord = new DiscordMain(this);
         discord.scheduleTasks = true;
 
@@ -33,20 +32,20 @@ public class PistonChatBridge extends JavaPlugin {
             }
         }.runTaskAsynchronously(this);
 
-        log.info(prefix + "Registering listeners");
+        log.info(ChatColor.GREEN + "Registering listeners");
         listener = new PlayerListener(discord);
-        getServer().getPluginManager().registerEvents(listener,this);
+        getServer().getPluginManager().registerEvents(listener, this);
     }
 
     @Override
     public void onDisable() {
-        log.info(prefix + "Telling discord bridge not to send messages anymore");
+        log.info(ChatColor.GREEN + "Telling discord bridge not to send messages anymore");
         discord.scheduleTasks = false;
 
-        log.info(prefix + "Unregistering all listeners");
+        log.info(ChatColor.GREEN + "Unregistering all listeners");
         HandlerList.unregisterAll(listener);
 
-        log.info(prefix + "Sending shutdown message");
+        log.info(ChatColor.GREEN + "Sending shutdown message");
         if (discord.hasStarted) {
             discord.channel.createEmbed(spec -> spec
                     .setTitle("Server stopping!")
@@ -55,9 +54,9 @@ public class PistonChatBridge extends JavaPlugin {
             log.info("Oh no! The client hasn't even started yet! Skipping that message.");
         }
 
-        log.info(prefix + "Killing discord task");
+        log.info(ChatColor.GREEN + "Killing discord task");
         Bukkit.getScheduler().cancelTasks(this);
 
-        log.info(prefix + "Finished unloading! Goodbye!");
+        log.info(ChatColor.GREEN + "Finished unloading! Goodbye!");
     }
 }

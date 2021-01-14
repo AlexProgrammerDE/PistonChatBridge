@@ -6,6 +6,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ConnectEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class DiscordMain {
     private GatewayDiscordClient gateway;
@@ -36,9 +38,9 @@ public class DiscordMain {
         FileConfiguration config = plugin.getConfig();
 
         DiscordClient client = DiscordClient.create(config.getString("token"));
-        gateway = client.login().block();
+        gateway = Objects.requireNonNull(client.login().block());
 
-        channel = gateway.getChannelById(Snowflake.of(config.getString("channel"))).ofType(MessageChannel.class).block();;
+        channel = gateway.getChannelById(Snowflake.of(config.getString("channel"))).ofType(MessageChannel.class).block();
 
         gateway.updatePresence(Presence.online(Activity.playing(config.getString("url")))).subscribe();
 
@@ -50,30 +52,27 @@ public class DiscordMain {
                         Message message = event.getMessage();
 
                         if (message.getChannel().block() instanceof GuildMessageChannel) {
-                            GuildMessageChannel messageChannel = (GuildMessageChannel) message.getChannel().block();
+                            GuildMessageChannel messageChannel = Objects.requireNonNull((GuildMessageChannel) message.getChannel().block());
 
-                            if (!message.getAuthor().get().getId().equals(gateway.getSelfId())) {
-                                // How to implement commands
-                                // if (message.getContent().equals(">test")) {
-                                //     channel.createMessage(Objects.requireNonNull(message.getAuthorAsMember().block()).getMention() + " test");
-                                // } else
+                            Optional<User> author = message.getAuthor();
 
-                                if (messageChannel.getId().equals(Snowflake.of(config.getString("channel")))) {
-                                    Color roleColor = Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getColor();
+                            if (author.isPresent()
+                                    && !author.get().getId().equals(gateway.getSelfId())
+                                    && messageChannel.getId().equals(Snowflake.of(config.getString("channel")))) {
+                                Color roleColor = Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getColor();
 
-                                    ChatColor roleChatcolor = ColorUtil.fromRGB(roleColor);
+                                ChatColor roleChatColor = ColorUtil.fromRGB(roleColor);
 
-                                    Bukkit.broadcastMessage(
-                                            "["
-                                                    + roleChatcolor
-                                                    + Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getName()
-                                                    + ChatColor.RESET
-                                                    + "] "
-                                                    + ChatColor.BOLD
-                                                    + message.getAuthorAsMember().block().getDisplayName()
-                                                    + " > "
-                                                    + message.getContent());
-                                }
+                                Bukkit.broadcastMessage(
+                                        "["
+                                                + roleChatColor
+                                                + Objects.requireNonNull(Objects.requireNonNull(message.getAuthorAsMember().block()).getHighestRole().block()).getName()
+                                                + ChatColor.RESET
+                                                + "] "
+                                                + ChatColor.BOLD
+                                                + Objects.requireNonNull(message.getAuthorAsMember().block()).getDisplayName()
+                                                + " > "
+                                                + message.getContent());
                             }
                         }
                     }
@@ -104,7 +103,8 @@ public class DiscordMain {
                 @Override
                 public void run() {
                     channel.createEmbed(spec -> spec
-                            .setTitle("**" + ChatColor.stripColor(player.getDisplayName()).replaceAll("@", "(at)") + "** > " + message.replaceAll("@", "(at)"))
+                            .setTitle("**" + ChatColor.stripColor(player.getDisplayName())
+                                    .replace("@", "(at)") + "** > " + message.replace("@", "(at)"))
                             .setColor(Color.YELLOW)).block();
                 }
             }.runTaskAsynchronously(plugin);
@@ -117,7 +117,8 @@ public class DiscordMain {
                 @Override
                 public void run() {
                     channel.createEmbed(spec -> spec
-                            .setTitle("**" + ChatColor.stripColor(message).replaceAll("@", "(at)") + "**")
+                            .setTitle("**" + ChatColor.stripColor(message)
+                                    .replace("@", "(at)") + "**")
                             .setColor(Color.YELLOW)).block();
                 }
             }.runTaskAsynchronously(plugin);
